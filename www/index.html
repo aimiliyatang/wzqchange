@@ -1,0 +1,234 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta charset="utf-8" />
+	    <meta name="format-detection" content="telephone=no" />
+	    <meta name="msapplication-tap-highlight" content="no" />
+		<script src="http://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=yes, width=device-width">
+		 <script type="text/javascript" src="cordova.js"></script>
+    	<script type="text/javascript" src="js/index.js"></script>
+		<script>
+			window.onload=function(){
+				var allDiv=document.getElementsByClassName("sdiv");
+                var rows=11;
+                var cols=20;
+				var g_qipan=new Array(rows);
+				var color="red";
+				var g_x;
+				var g_y;
+				var c_y;
+				var Ctime;
+				var end_time=true;
+				function getColor(){
+					if(color=="red"){
+						color="black";
+					}else{
+						color="red";
+					}
+				}
+				
+				for(var i=0;i<rows;i++){
+					var bdiv=document.createElement("div");
+					bdiv.setAttribute("style","overflow:hidden;display:block;");
+                    bdiv.className="bdiv";
+					for(var j=0;j<cols;j++){
+						var sdiv=document.createElement("div");
+						sdiv.setAttribute("style","float:left;width:24px;height:24;border:1px solid red;border-radius:12px;margin:2px;box-shadow:4px 4px 4px 4px #ccc");
+						sdiv.setAttribute("class","sdiv");
+						bdiv.appendChild(sdiv);
+					}
+					document.body.appendChild(bdiv);
+				}
+				function resetQ(){
+					for(var k=0;k<g_qipan.length;k++){
+						g_qipan[k]=new Array(cols);
+						for(var x=0;x<g_qipan[k].length;x++){
+							g_qipan[k][x]=allDiv[k*cols+x];
+							g_qipan[k][x].onclick=function(){
+								if(end_time==false){
+									alert("棋子没有完全落下");
+									return false;
+								}
+								g_x=$(this).index();
+								c_y=$(this).parent().index();
+								for(var t=g_qipan.length-1;t>=0;t--){
+									if(g_qipan[t][g_x].style.background!="red"&&g_qipan[t][g_x].style.background!="black"){
+										g_y=t;
+										break;
+									}
+								}
+								if(g_y<c_y){
+									alert("非点击区域");
+									return false;
+								}
+								getColor();
+								g_qipan[c_y][g_x].style.background=color;
+								//alert(g_qipan[g_y][g_x].style.background)
+								Ctime=setInterval(fallQ,100);
+							}
+						}
+					}
+				}
+				resetQ();
+			/*	var z;
+				(function(){
+				for(var y=0;y<allDiv.length;y++){
+					z=y;
+					allDiv[z].onclick=function(){
+						getColor();
+						this.style.background=color;
+						this.onclick=function(){}
+						alert(z);
+					}
+				}})();
+			*/	
+				function checkColor(x,y){
+					var newColor=g_qipan[y][x].style.background;
+					var num1=0;
+					//水平方向
+					for(var a=x;a>=0;a--){
+						if(g_qipan[y][a].style.background==newColor){
+							num1++;
+						}else{
+							break;
+						}
+						if(num1>=5){
+							alert(newColor+"WIN！！！对话框消失之后将重设棋盘");
+							formatQ();
+							break;
+						}
+					}
+					for(var a=x+1;a<=cols-1;a++){
+						if(g_qipan[y][a].style.background==newColor){
+							num1++;
+						}else{
+							break;
+						}
+						if(num1>=5){
+							alert(newColor+"WIN！！！对话框消失之后将重设棋盘");
+							formatQ();
+							break;
+						}
+					}
+					
+					//垂直方向
+					var num2=0;
+					for(var a=y;a>=0;a--){
+						if(g_qipan[a][x].style.background==newColor){
+							num2++;
+						}else{
+							break;
+						}
+						if(num2>=5){
+							alert(newColor+"WIN！！！对话框消失之后将重设棋盘");
+							formatQ();
+							break;
+						}
+					}
+					for(var a=y+1;a<=rows-1;a++){
+						if(g_qipan[a][x].style.background==newColor){
+							num2++;
+						}else{
+							break;
+						}
+						if(num2>=5){
+							alert(newColor+"WIN！！！对话框消失之后将重设棋盘");
+							formatQ();
+							break;
+						}
+					}
+					
+					//左倾斜
+					var num3=0;
+					for(var a=y,b=x;a>=0&&b>=0;a--,b--){
+						if(g_qipan[a][b].style.background==newColor){
+							num3++;
+						}else{
+							break;
+						}
+						if(num3>=5){
+							alert(newColor+"WIN！！！对话框消失之后将重设棋盘");
+							formatQ();
+							break;
+						}
+					}
+					for(var a=y+1,b=x+1;a<=rows-1&&b<=cols-1;a++,b++){
+						if(g_qipan[a][b].style.background==newColor){
+							num3++;
+						}else{
+							break;
+						}
+						if(num3>=5){
+							alert(newColor+"WIN！！！对话框消失之后将重设棋盘");
+							formatQ();
+							break;
+						}
+					}
+					
+					//右倾斜
+					var num4=0;
+					for(var a=y,b=x;a>=0&&b<=cols-1;a--,b++){
+						if(g_qipan[a][b].style.background==newColor){
+							num4++;
+						}else{
+							break;
+						}
+						if(num4>=5){
+							alert(newColor+"WIN！！！对话框消失之后将重设棋盘");
+							formatQ();
+							break;
+						}
+					}
+					for(var a=y+1,b=x-1;a<=rows-1&&b>=0;a++,b--){
+						if(g_qipan[a][b].style.background==newColor){
+							num4++;
+						}else{
+							break;
+						}
+						if(num4>=5){
+							alert(newColor+"WIN！！！对话框消失之后将重设棋盘");
+							formatQ();
+							break;
+						}
+					}
+				
+				}
+				
+				//清空棋盘
+				function formatQ(){
+					for(var f=0;f<allDiv.length;f++){
+						allDiv[f].style.background="white";
+					}
+					resetQ();
+				}
+				
+				//棋子下落
+				function fallQ(){
+					if(c_y<g_y){
+						end_time=false;
+						g_qipan[c_y][g_x].style.background="white";
+						g_qipan[c_y+1][g_x].style.background=color;
+						c_y++;
+					}else{
+						clearInterval(Ctime);
+						g_qipan[g_y][g_x].style.background=color;
+						checkColor(g_x,g_y);
+						end_time=true;
+					}
+				}
+				
+			
+			}
+		</script>
+		<style type="text/css">
+			
+		</style>
+	</head>
+		
+	<body>
+		
+	</body>
+
+</html>
